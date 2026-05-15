@@ -7,12 +7,8 @@ private:
   int16_t internal_speed;
 
   byte in1Pin, in2Pin;
-  byte speedPin;
-#ifdef ARDUINO_ARCH_ESP32
-  byte pwmChannel;
-#endif
 public:
-  L298NMotor(byte in1Pin, byte in2Pin, byte speedPin);
+  L298NMotor(byte in1Pin, byte in2Pin);
 
   void setSpeed(int8_t speed);
   int8_t speed;
