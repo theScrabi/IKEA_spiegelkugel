@@ -1,5 +1,17 @@
 #include "IKEA_spiegelkugel.h"
 
+namespace {
+  // Open/close motor wiring
+  constexpr byte OPEN_CLOSE_IN1_PIN   = 25;
+  constexpr byte OPEN_CLOSE_IN2_PIN   = 26;
+  constexpr byte OPEN_CLOSE_SPEED_PIN = 27;
+
+  // Rotation motor wiring
+  constexpr byte ROTATION_IN1_PIN   = 32;
+  constexpr byte ROTATION_IN2_PIN   = 33;
+  constexpr byte ROTATION_SPEED_PIN = 13;
+}
+
 
 L298NMotor::L298NMotor(byte in1Pin, byte in2Pin, byte speedPin)
   : in1Pin(in1Pin), in2Pin(in2Pin), speedPin(speedPin)
@@ -24,9 +36,8 @@ L298NMotor::L298NMotor(byte in1Pin, byte in2Pin, byte speedPin)
 
 void IKEA_spiegelkugel::setup()
 {
-  // TODO: replace placeholder GPIOs with the real wiring
-  openCloseMotor = new L298NMotor(/*in1*/ 25, /*in2*/ 26, /*speed*/ 27);
-  rotationMotor  = new L298NMotor(/*in1*/ 32, /*in2*/ 33, /*speed*/ 13);
+  openCloseMotor = new L298NMotor(OPEN_CLOSE_IN1_PIN, OPEN_CLOSE_IN2_PIN, OPEN_CLOSE_SPEED_PIN);
+  rotationMotor  = new L298NMotor(ROTATION_IN1_PIN,   ROTATION_IN2_PIN,   ROTATION_SPEED_PIN);
 }
 
 void IKEA_spiegelkugel::loop()
