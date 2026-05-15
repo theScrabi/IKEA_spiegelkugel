@@ -1,5 +1,10 @@
 #include "IKEA_spiegelkugel.h"
 
+
+L298NMotor::L298NMotor() {
+
+}
+
 void IKEA_spiegelkugel::setup()
 {
 }
