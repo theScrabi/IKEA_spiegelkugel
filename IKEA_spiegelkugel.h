@@ -10,7 +10,7 @@ constexpr byte OPEN_CLOSE_IN2_PIN = 18;
 
 // Rotation motor wiring
 constexpr byte ROTATION_IN1_PIN = 19;
-constexpr byte ROTATION_IN2_PIN = 20;
+constexpr byte ROTATION_IN2_PIN = 21;
 } // namespace
 
 
@@ -36,6 +36,8 @@ class IKEA_spiegelkugel : public Usermod
 private:
   L298NMotor openCloseMotor = L298NMotor(OPEN_CLOSE_IN1_PIN, OPEN_CLOSE_IN2_PIN);
   L298NMotor rotationMotor = L298NMotor(ROTATION_IN1_PIN,   ROTATION_IN2_PIN);
+
+  void registerWebHandlers();
 public:
   void setup();
   void loop();
