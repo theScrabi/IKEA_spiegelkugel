@@ -1,4 +1,5 @@
 #include "IKEA_spiegelkugel.h"
+#include "wled.h"
 
 namespace {
 // Open/close motor wiring
@@ -25,7 +26,20 @@ void L298NMotor::setSpeed(int8_t speed) {
     internal_speed = -internal_speed;
   }
 
-  
+  if(internal_speed == 0) {
+    digitalWrite(in1Pin, 0);
+    digitalWrite(in2Pin, 0);
+  } else if(0 < internal_speed) {
+    digitalWrite(in2Pin, 0);
+    analogWrite(in1Pin, internal_speed);
+  } else if (internal_speed < 0) {
+    digitalWrite(in1Pin, 0);
+    analogWrite(in2Pin, -internal_speed);
+  }
+}
+
+int8_t L298NMotor::getSpeed() {
+  return internal_speed;
 }
 
 void IKEA_spiegelkugel::setup() {
