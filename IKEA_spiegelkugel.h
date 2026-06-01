@@ -5,12 +5,12 @@
 
 namespace {
 // Open/close motor wiring
-constexpr byte OPEN_CLOSE_IN1_PIN = 25;
-constexpr byte OPEN_CLOSE_IN2_PIN = 26;
+constexpr byte OPEN_CLOSE_IN1_PIN = 17;
+constexpr byte OPEN_CLOSE_IN2_PIN = 18;
 
 // Rotation motor wiring
-constexpr byte ROTATION_IN1_PIN = 32;
-constexpr byte ROTATION_IN2_PIN = 33;
+constexpr byte ROTATION_IN1_PIN = 19;
+constexpr byte ROTATION_IN2_PIN = 20;
 } // namespace
 
 
