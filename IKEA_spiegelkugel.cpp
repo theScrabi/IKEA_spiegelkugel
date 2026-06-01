@@ -2,8 +2,8 @@
 #include "wled.h"
 #include <cstdint>
 
-L298NMotor::L298NMotor(byte in1Pin, byte in2Pin)
-    : in1Pin(in1Pin), in2Pin(in2Pin) {}
+L298NMotor::L298NMotor(byte in1Pin, byte in2Pin, String name)
+    : in1Pin(in1Pin), in2Pin(in2Pin), name(name) {}
 
 void L298NMotor::setup() {
   PinManager::allocatePin(in1Pin, true, PinOwner::UM_Unspecified);
@@ -26,9 +26,9 @@ void L298NMotor::setSpeed(int8_t speed) {
     analogWrite(in1Pin, 0);
     analogWrite(in2Pin, -internal_speed);
   }
-}
 
-int8_t L298NMotor::getSpeed() { return internal_speed; }
+  Serial.println(name + " set to " + String(getSpeed()));
+}
 
 namespace {
 const char IKEA_UI_HTML[] PROGMEM = R"=====(<!DOCTYPE html>
@@ -50,7 +50,7 @@ const char IKEA_UI_HTML[] PROGMEM = R"=====(<!DOCTYPE html>
 const o=document.getElementById('o'),r=document.getElementById('r');
 const oo=document.getElementById('oo'),ro=document.getElementById('ro');
 function send(){oo.textContent=o.value;ro.textContent=r.value;
-  fetch('/ikea/set?o='+o.value+'&r='+r.value);}
+  fetch('/ikea/set?o='+o.value+'&r='+r.value,{method:'POST'});}
 o.oninput=()=>oo.textContent=o.value;r.oninput=()=>ro.textContent=r.value;
 o.onchange=send;r.onchange=send;
 </script></body></html>)=====";
@@ -59,15 +59,13 @@ o.onchange=send;r.onchange=send;
 void IKEA_spiegelkugel::registerWebHandlers() {
   // More specific path first: AsyncWebServer's `on()` prefix-matches
   // `_uri+"/"`, so `/ikea` would otherwise swallow `/ikea/set`.
-  server.on("/ikea/set", HTTP_GET, [this](AsyncWebServerRequest *req) {
+  server.on("/ikea/set", HTTP_POST, [this](AsyncWebServerRequest *req) {
     if (req->hasParam("o")) {
       String value = req->getParam("o")->value();
-      Serial.println("OpenClose: " + value);
       openCloseMotor.setSpeed(value.toInt());
     }
     if (req->hasParam("r")) {
       String value = req->getParam("r")->value();
-      Serial.println("Rotation: " + value);
       rotationMotor.setSpeed(value.toInt());
     }
     req->send(200, "text/plain", "ok");
@@ -84,13 +82,16 @@ void IKEA_spiegelkugel::setup() {
 }
 
 void IKEA_spiegelkugel::loop() {
-  if (!ledControlEnabled) return;
-  if (segmentId >= strip.getSegmentsNum()) return;
+  if (!ledControlEnabled)
+    return;
+  if (segmentId >= strip.getSegmentsNum())
+    return;
 
   // R channel -> open/close speed, G channel -> rotation speed.
   // Map 0..255 -> -128..127 so the LED's midpoint (128) means stop.
   uint32_t color = strip.getSegment(segmentId).getPixelColor(pixelIndex);
-  if (color == lastPixelColor) return;
+  if (color == lastPixelColor)
+    return;
   lastPixelColor = color;
 
   openCloseMotor.setSpeed((int8_t)((int)R(color) - 128));
@@ -98,26 +99,27 @@ void IKEA_spiegelkugel::loop() {
 }
 
 namespace {
-const char IKEA_NAME[]    = "IKEA_spiegelkugel";
+const char IKEA_NAME[] = "IKEA_spiegelkugel";
 const char IKEA_ENABLED[] = "enabled";
 const char IKEA_SEGMENT[] = "segment";
-const char IKEA_PIXEL[]   = "pixel";
-}
+const char IKEA_PIXEL[] = "pixel";
+} // namespace
 
 void IKEA_spiegelkugel::addToConfig(JsonObject &root) {
   JsonObject top = root.createNestedObject(IKEA_NAME);
   top[IKEA_ENABLED] = ledControlEnabled;
   top[IKEA_SEGMENT] = segmentId;
-  top[IKEA_PIXEL]   = pixelIndex;
+  top[IKEA_PIXEL] = pixelIndex;
 }
 
 bool IKEA_spiegelkugel::readFromConfig(JsonObject &root) {
   JsonObject top = root[IKEA_NAME];
-  if (top.isNull()) return false;
+  if (top.isNull())
+    return false;
 
   ledControlEnabled = top[IKEA_ENABLED] | ledControlEnabled;
-  segmentId         = top[IKEA_SEGMENT] | segmentId;
-  pixelIndex        = top[IKEA_PIXEL]   | pixelIndex;
+  segmentId = top[IKEA_SEGMENT] | segmentId;
+  pixelIndex = top[IKEA_PIXEL] | pixelIndex;
   return true;
 }
 
