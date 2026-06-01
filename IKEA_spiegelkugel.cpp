@@ -84,15 +84,41 @@ void IKEA_spiegelkugel::setup() {
 }
 
 void IKEA_spiegelkugel::loop() {
-  // Drive motors from the first pixel of the first segment:
+  if (!ledControlEnabled) return;
+  if (segmentId >= strip.getSegmentsNum()) return;
+
   // R channel -> open/close speed, G channel -> rotation speed.
   // Map 0..255 -> -128..127 so the LED's midpoint (128) means stop.
-  uint32_t color = strip.getSegment(0).getPixelColor(0);
+  uint32_t color = strip.getSegment(segmentId).getPixelColor(pixelIndex);
   if (color == lastPixelColor) return;
   lastPixelColor = color;
 
   openCloseMotor.setSpeed((int8_t)((int)R(color) - 128));
   rotationMotor.setSpeed((int8_t)((int)G(color) - 128));
+}
+
+namespace {
+const char IKEA_NAME[]    = "IKEA_spiegelkugel";
+const char IKEA_ENABLED[] = "enabled";
+const char IKEA_SEGMENT[] = "segment";
+const char IKEA_PIXEL[]   = "pixel";
+}
+
+void IKEA_spiegelkugel::addToConfig(JsonObject &root) {
+  JsonObject top = root.createNestedObject(IKEA_NAME);
+  top[IKEA_ENABLED] = ledControlEnabled;
+  top[IKEA_SEGMENT] = segmentId;
+  top[IKEA_PIXEL]   = pixelIndex;
+}
+
+bool IKEA_spiegelkugel::readFromConfig(JsonObject &root) {
+  JsonObject top = root[IKEA_NAME];
+  if (top.isNull()) return false;
+
+  ledControlEnabled = top[IKEA_ENABLED] | ledControlEnabled;
+  segmentId         = top[IKEA_SEGMENT] | segmentId;
+  pixelIndex        = top[IKEA_PIXEL]   | pixelIndex;
+  return true;
 }
 
 static IKEA_spiegelkugel ikea_spiegelkugel;

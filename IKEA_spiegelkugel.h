@@ -37,10 +37,16 @@ private:
   L298NMotor openCloseMotor = L298NMotor(OPEN_CLOSE_IN1_PIN, OPEN_CLOSE_IN2_PIN);
   L298NMotor rotationMotor = L298NMotor(ROTATION_IN1_PIN,   ROTATION_IN2_PIN);
 
+  bool     ledControlEnabled = true;
+  uint8_t  segmentId         = 0;
+  uint16_t pixelIndex        = 0;
+
   uint32_t lastPixelColor = 0xFFFFFFFF;
 
   void registerWebHandlers();
 public:
-  void setup();
-  void loop();
+  void setup() override;
+  void loop() override;
+  void addToConfig(JsonObject &root) override;
+  bool readFromConfig(JsonObject &root) override;
 };
