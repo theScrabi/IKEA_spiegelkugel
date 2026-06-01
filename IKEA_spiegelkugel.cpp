@@ -83,7 +83,17 @@ void IKEA_spiegelkugel::setup() {
   registerWebHandlers();
 }
 
-void IKEA_spiegelkugel::loop() {}
+void IKEA_spiegelkugel::loop() {
+  // Drive motors from the first pixel of the first segment:
+  // R channel -> open/close speed, G channel -> rotation speed.
+  // Map 0..255 -> -128..127 so the LED's midpoint (128) means stop.
+  uint32_t color = strip.getSegment(0).getPixelColor(0);
+  if (color == lastPixelColor) return;
+  lastPixelColor = color;
+
+  openCloseMotor.setSpeed((int8_t)((int)R(color) - 128));
+  rotationMotor.setSpeed((int8_t)((int)G(color) - 128));
+}
 
 static IKEA_spiegelkugel ikea_spiegelkugel;
 REGISTER_USERMOD(ikea_spiegelkugel);

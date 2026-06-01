@@ -37,6 +37,8 @@ private:
   L298NMotor openCloseMotor = L298NMotor(OPEN_CLOSE_IN1_PIN, OPEN_CLOSE_IN2_PIN);
   L298NMotor rotationMotor = L298NMotor(ROTATION_IN1_PIN,   ROTATION_IN2_PIN);
 
+  uint32_t lastPixelColor = 0xFFFFFFFF;
+
   void registerWebHandlers();
 public:
   void setup();
