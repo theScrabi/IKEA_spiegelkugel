@@ -114,13 +114,16 @@ void IKEA_spiegelkugel::addToConfig(JsonObject &root) {
 
 bool IKEA_spiegelkugel::readFromConfig(JsonObject &root) {
   JsonObject top = root[IKEA_NAME];
+
   if (top.isNull())
     return false;
 
-  ledControlEnabled = top[IKEA_ENABLED] | ledControlEnabled;
-  segmentId = top[IKEA_SEGMENT] | segmentId;
-  pixelIndex = top[IKEA_PIXEL] | pixelIndex;
-  return true;
+  bool configComplete = true;
+  configComplete &= getJsonValue(top[IKEA_ENABLED], ledControlEnabled);
+  configComplete &= getJsonValue(top[IKEA_SEGMENT], segmentId);
+  configComplete &= getJsonValue(top[IKEA_PIXEL], pixelIndex);
+
+  return configComplete;
 }
 
 static IKEA_spiegelkugel ikea_spiegelkugel;
