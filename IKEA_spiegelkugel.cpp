@@ -75,7 +75,6 @@ void IKEA_spiegelkugel::registerWebHandlers() {
   server.on("/ikea", HTTP_GET, [](AsyncWebServerRequest *req) {
     req->send_P(200, "text/html", IKEA_UI_HTML);
   });
-  Serial.println("register web");
 }
 
 void IKEA_spiegelkugel::setup() {
